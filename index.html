@@ -284,8 +284,13 @@ async function fetchPrice(){
       document.getElementById('m-change').className='metric-value '+(change>=0?'green':'red');
       document.getElementById('m-changepct').textContent=(changePct>=0?'+':'')+changePct.toFixed(2)+'% vs prev close';
       document.getElementById('m-updated').textContent='Updated '+new Date().toLocaleTimeString();
-      document.getElementById('live-dot').className='live-dot';
-      document.getElementById('live-status').textContent='Live';
+      const now=new Date();
+      const nyTime=new Date(now.toLocaleString("en-US",{timeZone:"America/New_York"}));
+      const nyH=nyTime.getHours(), nyM=nyTime.getMinutes(), nyDay=nyTime.getDay();
+      const isWeekday=nyDay>=1&&nyDay<=5;
+      const marketOpen=isWeekday&&(nyH>9||(nyH===9&&nyM>=30))&&nyH<16;
+      document.getElementById('live-dot').className=marketOpen?'live-dot':'live-dot offline';
+      document.getElementById('live-status').textContent=marketOpen?'Live':'Market closed';
       if(mode==='live'){document.getElementById('s-slider').value=price;document.getElementById('s-label').textContent='$'+price.toFixed(2);update();}
       return;
     }catch(e){continue;}
